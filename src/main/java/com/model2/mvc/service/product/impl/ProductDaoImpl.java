@@ -3,6 +3,7 @@ package com.model2.mvc.service.product.impl;
 
 import java.util.List;
 
+import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,7 +32,9 @@ public class ProductDaoImpl implements ProductDao {
 	@Override
 	public List<Product> selectProductList(Search search) throws Exception {
 
-		return sqlSession.selectList("ProductMapper.selectProductList", search);
+		return sqlSession.selectList("ProductMapper.selectProductList", 
+									 search, 
+									 new RowBounds((search.getCurrentPage()-1) * search.getPageSize(), search.getPageSize()));
 	}
 
 	@Override

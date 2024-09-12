@@ -23,45 +23,37 @@
 			parameterType="search"
 			resultMap="productSelectMap">
 			
-		SELECT * 
-		FROM(	SELECT inner_table.*, ROWNUM AS row_seq
-				FROM	(SELECT
-						prod_no, prod_name, prod_detail, manufacture_day, price, image_file, reg_date, pro_tran_code
-						FROM product
-						
-							<where>
-								pro_tran_code = '1'
-								<if test="searchKeyword !=null and searchKeyword != ''">
-									<choose>
-										<!-- 상품명 검색 -->
-										<when test="searchCondition == 1">
-											AND prod_name LIKE '%'||#{searchKeyword}||'%'
-										</when>
-										
-										<!-- 가격 검색 -->
-										<!-- TODO 따로 가격 범위 기능추가 필요 -->
-										<when test="searchCondition == 2">
-											AND price &lt;= #{searchKeyword}
-										</when>
-										
-										<!-- 기본 상품번호 검색 -->
-										<otherwise>
-											AND prod_no LIKE '%'||#{searchKeyword}||'%'
-										</otherwise>
-									</choose>
-								</if>
-							</where>
-						
-						
-						<trim prefix="ORDER BY" prefixOverrides=",">
-							<if test="orderBy != null and orderBy != ''">${orderBy} <if test="desc">DESC</if></if>
-							, reg_date DESC NULLS LAST, prod_no 
-						</trim>	
-						) inner_table
-						
-				WHERE ROWNUM &lt;= #{endRowNum})
-				
-		WHERE row_seq BETWEEN #{startRowNum} AND #{endRowNum}
+		SELECT
+		prod_no, prod_name, prod_detail, manufacture_day, price, image_file, reg_date, pro_tran_code
+		FROM product
+		
+		<where>
+			pro_tran_code = '1'
+			<if test="searchKeyword != null and searchKeyword != ''">
+				<choose>
+					<!-- 상품명 검색 -->
+					<when test="searchCondition == 1">
+						AND prod_name LIKE '%'||#{searchKeyword}||'%'
+					</when>
+					
+					<!-- 가격 검색 -->
+					<!-- TODO 따로 가격 범위 기능추가 필요 -->
+					<when test="searchCondition == 2">
+						AND price &lt;= #{searchKeyword}
+					</when>
+					
+					<!-- 기본 상품번호 검색 -->
+					<otherwise>
+						AND prod_no LIKE '%'||#{searchKeyword}||'%'
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+		
+		<trim prefix="ORDER BY" prefixOverrides=",">
+			<if test="orderBy != null and orderBy != ''">${orderBy} <if test="desc">DESC</if></if>
+			, reg_date DESC NULLS LAST, prod_no 
+		</trim>	
 		
 	</select>
 	
@@ -73,10 +65,10 @@
 	
 		SELECT COUNT(*) 
 		FROM (	SELECT
-				prod_no, prod_name, prod_detail, manufacture_day, price, image_file, reg_date, pro_tran_code
-				FROM product
-				
-				<where>
+			 	prod_no, prod_name, prod_detail, manufacture_day, price, image_file, reg_date, pro_tran_code
+			 	FROM product
+			 	
+			 	<where>
 					pro_tran_code = '1'
 					<if test="searchKeyword !=null and searchKeyword != ''">
 						<choose>
@@ -98,12 +90,7 @@
 						</choose>
 					</if>
 				</where>
-				
-				<trim prefix="ORDER BY" prefixOverrides=",">
-					<if test="orderBy != null and orderBy != ''">${orderBy} <if test="desc">DESC</if></if>
-					, reg_date DESC NULLS LAST, prod_no 
-				</trim>	
-				) countTable
+			 ) countTable
 	
 	</select>
 	
@@ -125,11 +112,9 @@
 	<select id="selectCurrentProduct"
 			resultMap="productSelectMap">
 			
-		SELECT * 
-		FROM (	SELECT * 
-				FROM product
-				ORDER BY prod_no DESC)
-		WHERE ROWNUM = 1
+		SELECT *
+		FROM product
+		WHERE prod_no = (SELECT MAX(prod_no) FROM product);
 			
 	</select>
 	

@@ -109,7 +109,6 @@ public class LogonCheckInterceptor extends HandlerInterceptorAdapter {
 		boolean uriFlag = false;
 		
 		for (String checkURI : checkURIs) {
-			System.out.println("\t"+checkURI);
 			if (uri.indexOf(checkURI) != -1) {
 				uriFlag = true;
 			}
