@@ -9,7 +9,7 @@
 				 http://www.springframework.org/schema/aop 
 				 http://www.springframework.org/schema/aop/spring-aop.xsd">
 				
-		<!--  AOP 적용 : LOG 를 처리사느  Aspect 선언   -->
+		<!--  AOP 적용 : LOG 를 처리하는  Aspect 선언   -->
 	<!-- 1.일반 Bean Definition :: POJO 기반 -->
 	<bean 	id="logAspect"		class="com.model2.mvc.common.aspect.LogAspectJ" />
 	 
@@ -20,7 +20,8 @@
 	 		<aop:around 
 					pointcut="execution(* com.model2.mvc.service..*Impl.*(..) )" method="invoke"/>
 			
-			<!-- *Interceptor(..) point-cut 추가 -->
+			<aop:around 
+					pointcut="execution(* com.model2.mvc.web..*Controller.*(..))" method="logRequest"/>
 			
 	 	</aop:aspect>
 	 </aop:config>

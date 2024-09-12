@@ -26,6 +26,10 @@ public class PurchaseDaoImpl implements PurchaseDao {
 	public void setSqlSession(SqlSession sqlSession) {
 		this.sqlSession = sqlSession;
 	}
+	
+	private RowBounds getRowBounds(Search search) {
+		return new RowBounds((search.getCurrentPage()-1) * search.getPageSize(), search.getPageSize());
+	}
 
 	// Constructor
 	public PurchaseDaoImpl() {
@@ -55,11 +59,9 @@ public class PurchaseDaoImpl implements PurchaseDao {
 	@Override
 	public List<Purchase> selectPurchaseList(Search search, String buyerId) throws Exception {
 		
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("search", search);
-		map.put("buyerId", buyerId);
-		
-		List<Purchase> list = sqlSession.selectList("PurchaseMapper.selectPurchaseList", map);
+		List<Purchase> list = sqlSession.selectList("PurchaseMapper.selectPurchaseList", 
+													buyerId, 
+													getRowBounds(search));
 		
 		for (Purchase purchase : list) {
 			purchase.setPurchaseProd(sqlSession.selectOne("ProductMapper.selectProduct", purchase.getPurchaseProd().getProdNo()));
@@ -80,11 +82,9 @@ public class PurchaseDaoImpl implements PurchaseDao {
 	@Override
 	public List<Purchase> selectPurchaseHistoryList(Search search, String buyerId) throws Exception {
 		
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("search", search);
-		map.put("buyerId", buyerId);
-		
-		List<Purchase> list = sqlSession.selectList("PurchaseMapper.selectPurchaseHistoryList", map);
+		List<Purchase> list = sqlSession.selectList("PurchaseMapper.selectPurchaseHistoryList", 
+													buyerId,
+													getRowBounds(search));
 		
 		for (Purchase purchase : list) {
 			purchase.setPurchaseProd(sqlSession.selectOne("ProductMapper.selectProduct", purchase.getPurchaseProd().getProdNo()));
@@ -105,7 +105,9 @@ public class PurchaseDaoImpl implements PurchaseDao {
 	@Override
 	public List<Purchase> selectSaleList(Search search) throws Exception {
 		
-		List<Purchase> list = sqlSession.selectList("PurchaseMapper.selectSaleList", null, new RowBounds(search.getStartRowNum(), search.getEndRowNum()));
+		List<Purchase> list = sqlSession.selectList("PurchaseMapper.selectSaleList", 
+													null, 
+													getRowBounds(search));
 		
 		for (Purchase purchase : list) {
 			purchase.setPurchaseProd(sqlSession.selectOne("ProductMapper.selectProduct", purchase.getPurchaseProd().getProdNo()));

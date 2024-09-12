@@ -83,20 +83,14 @@
 	<!-- selectPurchaseList: 구매이력 조회 (구매완료~배송중) -->
 	<!-- RowBouns 사용해보기 RowBounds(offset, limit) -->
 	<select id="selectPurchaseList"
-			parameterType="map"
+			parameterType="string"
 			resultMap="purchaseSelectMap">
 	
 		SELECT * 
-		FROM(	SELECT inner_table.*, ROWNUM AS row_seq		
-				FROM(	SELECT * 
-						FROM transaction
-						WHERE buyer_id = #{buyerId}
-						AND tran_status_code BETWEEN 2 AND 3
-						ORDER BY order_date DESC
-					) inner_talbe
-				WHERE ROWNUM &lt;= #{search.endRowNum}
-			)
-		WHERE row_seq BETWEEN #{search.startRowNum} AND #{search.endRowNum}
+		FROM transaction
+		WHERE buyer_id = #{buyerId}
+		AND tran_status_code BETWEEN 2 AND 3
+		ORDER BY order_date DESC
 				
 	</select>
 	
@@ -107,31 +101,25 @@
 	
 		SELECT COUNT(*)
 		FROM (SELECT * 
-			FROM transaction
-			WHERE buyer_id = #{buyerId}
-			AND tran_status_code BETWEEN 2 AND 3
-			)
+			  FROM transaction
+			  WHERE buyer_id = #{buyerId}
+			  AND tran_status_code BETWEEN 2 AND 3
+			  )
 			
 	</select>
 	
 	
 	<!-- selectPurchaseHistoryList: 구매이력 조회 (배송완료~) -->
 	<select id="selectPurchaseHistoryList"
-			parameterType="map"
+			parameterType="string"
 			resultMap="purchaseSelectMap">
 	
 		SELECT * 
-		FROM(	SELECT inner_table.*, ROWNUM AS row_seq		
-				FROM(	SELECT * 
-						FROM transaction
-						WHERE buyer_id = #{buyerId}
-						AND tran_status_code &gt;= 4
-						ORDER BY order_date DESC
-					) inner_talbe
-				WHERE ROWNUM &lt;= #{search.endRowNum}
-			)
-		WHERE row_seq BETWEEN #{search.startRowNum} AND #{search.endRowNum}
-				
+		FROM transaction
+		WHERE buyer_id = #{buyerId}
+		AND tran_status_code &gt;= 4
+		ORDER BY order_date DESC
+					
 	</select>
 	
 	
@@ -152,7 +140,6 @@
 	<!-- selectSaleList: 판매완료 상품리스트 조회 (관리자) -->
 	<!-- RowBounds 사용 -->
 	<select id="selectSaleList"
-			parameterType="search"
 			resultMap="purchaseSelectMap">
 	
 		SELECT * 

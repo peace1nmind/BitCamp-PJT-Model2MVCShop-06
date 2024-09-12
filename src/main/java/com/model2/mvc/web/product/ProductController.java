@@ -11,13 +11,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.model2.mvc.common.Page;
 import com.model2.mvc.common.Paging;
 import com.model2.mvc.common.Search;
+import com.model2.mvc.service.domain.Product;
 import com.model2.mvc.service.product.ProductService;
 import com.model2.mvc.service.purchase.PurchaseService;
 
@@ -47,6 +50,7 @@ public class ProductController {
 	}
 
 	// Method
+	// 상품목록
 	@RequestMapping("/listProduct.do")
 	public String listProduct(@RequestParam("menu") String menu,
 							  @ModelAttribute("search") Search search,
@@ -59,7 +63,7 @@ public class ProductController {
 		// menu: search , manage
 		model.addAttribute("menu" ,menu);
 		model.addAttribute("title", (menu!=null && menu.equals("search"))? "상품 목록조회" : "상품관리");
-		model.addAttribute("navi", (menu!=null && menu.equals("search"))? "getProduct.do" : "updateProductView.do");
+		model.addAttribute("navi", (menu!=null && menu.equals("search"))? "getProduct.do" : "updateProduct.do");
 		
 		
 		// 검색 조건을 다루는 로직
@@ -83,7 +87,7 @@ public class ProductController {
 			Map<String, Object> saleMap = purchaseService.getSaleList(saleSearch);
 			model.addAttribute("saleMap", saleMap);
 			
-			Paging salePaging = new Paging((int) saleMap.get("count"), search.getCurrentPage(), pageSize, pageUnit);
+			Paging salePaging = new Paging((int) saleMap.get("count"), saleSearch.getCurrentPage(), pageSize, pageUnit);
 			model.addAttribute("salePaging", salePaging);
 		}
 		
@@ -92,11 +96,14 @@ public class ProductController {
 	}
 	
 	
-	@RequestMapping("/getProduct")
+	// 상품정보
+	@RequestMapping("/getProduct.do")
 	public String getProduct(@RequestParam("prodNo") String prodNo,
 							 HttpServletRequest request,
 							 HttpServletResponse response,
 							 Model model) throws NumberFormatException, Exception {
+		
+		System.out.println("/getProduct.do");
 		
 		// 상품정보를 가져오는 로직
 		model.addAttribute("product", productService.getProduct(Integer.parseInt(prodNo)));
@@ -148,6 +155,37 @@ public class ProductController {
 		response.addCookie(history);
 		
 		return "forward:/product/getProduct.jsp";
+	}
+	
+	
+	// 상품정보 수정
+	@GetMapping("/updateProduct.do")
+	public String updateProduct(@RequestParam("prodNo") int prodNo,
+								Model model) throws Exception {
+		
+		System.out.println("/updateProduct.do");
+		
+		model.addAttribute("product", productService.getProduct(prodNo));
+		
+		return "forward:/product/updateProductView.jsp";
+	}
+	
+	@PostMapping("/updateProduct.do")
+	public String updateProduct(@ModelAttribute("product") Product product,
+								Model model) throws Exception {
+		
+		product = productService.updateProduct(product);
+		model.addAttribute("product", product);
+		
+		return "forward:/product/updateProduct.jsp";
+	}
+	
+	
+	// 상품등록
+	@GetMapping("/addProduct.do")
+	public String addProduct() {
+		
+		return "redirect:/product/addProductView.jsp";
 	}
 
 }
