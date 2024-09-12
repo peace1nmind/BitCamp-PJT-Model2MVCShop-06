@@ -18,8 +18,7 @@
 	 <aop:config>
 	 	<aop:aspect  ref="logAspect">
 	 		<aop:around 
-					pointcut="execution(* com.model2.mvc.service..*Impl.*(..) )
-							|| execution(* com.model2.mvc.common.web.LogonCheckInterceptor.*(..))"	method="invoke"/>
+					pointcut="execution(* com.model2.mvc.service..*Impl.*(..) )" method="invoke"/>
 			
 			<!-- *Interceptor(..) point-cut 추가 -->
 			

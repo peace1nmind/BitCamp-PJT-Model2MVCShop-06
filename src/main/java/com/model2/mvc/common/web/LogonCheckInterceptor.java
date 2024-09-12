@@ -24,8 +24,7 @@ import com.model2.mvc.service.domain.User;
  */
 
 // 관련 질문 답 : https://chatgpt.com/share/6273a0c4-c625-4a9c-ba89-3a76e7266874
-// common-servlet.xml에서 스캔대상 설정을 위한 어노테이션 정의
-@Component
+// HandlerInterceptor는 HHTP 요청 처리단계에서 동작하여 가로채기 때문에 빈과 메서드기반으로 프록시가 생기는 Spring AOP는 적용되지 않는다
 public class LogonCheckInterceptor extends HandlerInterceptorAdapter {
 
 	///Field
@@ -110,6 +109,7 @@ public class LogonCheckInterceptor extends HandlerInterceptorAdapter {
 		boolean uriFlag = false;
 		
 		for (String checkURI : checkURIs) {
+			System.out.println("\t"+checkURI);
 			if (uri.indexOf(checkURI) != -1) {
 				uriFlag = true;
 			}
